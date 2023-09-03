@@ -16,10 +16,12 @@ def addUser(userId):
 
 
 def deleteUser(userId):
-    with open('users.txt', 'r') as file:
-        readedUsers = file.read().split(',')
-        if str(userId) in readedUsers:
-            readedUsers.remove(userId)
+    # with open('users.txt', 'r') as file:
+        # readedUsers = file.read().split(',')
+        # if str(userId) in readedUsers:
+        #     readedUsers.remove(userId)
+    readedUsers = getUsersId()
+    readedUsers.remove(str(userId))
     with open('users.txt', 'w') as file:
         file.write(','.join(readedUsers))
         print('file changed')

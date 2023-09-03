@@ -2,7 +2,10 @@ import users
 import telebot
 from telebot import types
 
+# production token
 token = '6352429547:AAFwPOdadxX726y9VmLi5_FuS92pKoGtk90'
+# test token
+# token = '6483800445:AAER23eZoRpn2P-PVSdHJTBbQ3QO54oU1DA'
 bot = telebot.TeleBot(token)
 pairs = {}
 
@@ -11,7 +14,8 @@ pairs = {}
 def start_message(message):
     # creating keyboard
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.add(types.KeyboardButton('Search'))
+    markup.add(types.KeyboardButton('/search'))
+    markup.add(types.KeyboardButton('/stop'))
     # checking if user is new
     if (str(message.from_user.id) not in users.getUsersId()):
         # sending message to new user
@@ -22,7 +26,13 @@ def start_message(message):
     else:
         # sending message to returned user
         bot.send_message(message.chat.id, 'Hello again!', reply_markup=markup)
-
+@bot.message_handler(commands=['stop'])
+def stop_message(message):
+    users.deleteUser(message.from_user.id)
+    # if (str(message.from_user.id) in pairs):
+    #     bot.send_message(pairs[str(message.from_user.id)], 'Click search to start chatting')
+    #     pairs.pop(str(pairs[str(message.from_user.id)]))
+    # bot.send_message(message.chat.id, 'You are disconnected from chat')
 
 @bot.message_handler(commands=['search'])
 def search_message(message):
@@ -60,11 +70,15 @@ def search_message(message):
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):
-    # checking if user is in pair
-    if (str(message.from_user.id) in pairs):
-        # sending message to pair
-        bot.send_message(pairs[str(message.from_user.id)], message.text)
-    else:
+    try:
+        # checking if user is in pair
+        if (str(message.from_user.id) in pairs):
+            # sending message to pair
+            bot.send_message(pairs[str(message.from_user.id)], message.text)
+        else:
+            # sending message to invalid pair
+            bot.send_message(message.chat.id, 'Error, click search to start chatting')
+    except:
         # sending message to invalid pair
         bot.send_message(message.chat.id, 'Click search to start chatting')
 
