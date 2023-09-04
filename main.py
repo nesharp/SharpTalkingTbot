@@ -1,11 +1,12 @@
 import users
 import telebot
 from telebot import types
+import time
 
 # production token
-token = '6352429547:AAFwPOdadxX726y9VmLi5_FuS92pKoGtk90'
+# token = '6352429547:AAFwPOdadxX726y9VmLi5_FuS92pKoGtk90'
 # test token
-# token = '6483800445:AAER23eZoRpn2P-PVSdHJTBbQ3QO54oU1DA'
+token = '6483800445:AAER23eZoRpn2P-PVSdHJTBbQ3QO54oU1DA'
 bot = telebot.TeleBot(token)
 pairs = {}
 
@@ -36,37 +37,41 @@ def stop_message(message):
 
 @bot.message_handler(commands=['search'])
 def search_message(message):
-    if (str(message.from_user.id) in pairs):
-        # delete pair from dict
-        pairs.pop(str(pairs[str(message.from_user.id)]))
-        # sending messages to users about termination
-        bot.send_message(pairs[str(message.from_user.id)],
-                         'Your interlocutor terminated the conversation')
-        # sending message to user about searching
-        bot.send_message(message.from_user.id, 'Searching...')
-        # searching for new pair
-        randomUserId = users.getRandomUserId(message.from_user.id)
-        while (str(randomUserId) in pairs):
-            randomUserId = users.getRandomUserId(message.from_user.id)
-        # adding pairs to dict
-        pairs[str(message.from_user.id)] = randomUserId
-        pairs[str(randomUserId)] = message.from_user.id
-        # sending messages to users about connection
-        bot.send_message(message.from_user.id, 'Found!')
-        bot.send_message(randomUserId, 'You are connected to pair!')
+    if (str(message.from_user.id) not in users.getUsersId()):
+        bot.send_message(message.chat.id, 'Click start to start chatting')
     else:
-        bot.send_message(message.chat.id, 'Searching...')
-        # getting random user id
-        randomUserId = users.getRandomUserId(message.from_user.id)
-        while (str(randomUserId) in pairs):
+        if (str(message.from_user.id) in pairs):
+            # delete pair from dict
+            pairs.pop(str(pairs[str(message.from_user.id)]))
+            # sending messages to users about termination
+            bot.send_message(pairs[str(message.from_user.id)],
+                            'Your interlocutor terminated the conversation')
+            # sending message to user about searching
+            bot.send_message(message.from_user.id, 'Searching...')
+            # searching for new pair
             randomUserId = users.getRandomUserId(message.from_user.id)
-        # adding paira to dict
-        pairs[str(message.from_user.id)] = randomUserId
-        pairs[str(randomUserId)] = message.from_user.id
-        # seding messages to users abou connection
-        bot.send_message(message.from_user.id, 'Found!')
-        bot.send_message(randomUserId, 'You are connected to pair!')
-
+            while (str(randomUserId) in pairs or randomUserId == "None"):
+                randomUserId = users.getRandomUserId(message.from_user.id)
+                time.sleep(1)
+            # adding pairs to dict
+            pairs[str(message.from_user.id)] = randomUserId
+            pairs[str(randomUserId)] = message.from_user.id
+            # sending messages to users about connection
+            bot.send_message(message.from_user.id, 'Found!')
+            bot.send_message(randomUserId, 'You are connected to pair!')
+        else:
+            bot.send_message(message.chat.id, 'Searching...')
+            # getting random user id
+            randomUserId = users.getRandomUserId(message.from_user.id)
+            while (str(randomUserId) in pairs or randomUserId == "None"):
+                randomUserId = users.getRandomUserId(message.from_user.id)
+                time.sleep(1)
+            # adding paira to dict
+            pairs[str(message.from_user.id)] = randomUserId
+            pairs[str(randomUserId)] = message.from_user.id
+            # seding messages to users abou connection
+            bot.send_message(message.from_user.id, 'Found!')
+            bot.send_message(randomUserId, 'You are connected to pair!')
 
 @bot.message_handler(content_types=['text'])
 def get_text_messages(message):

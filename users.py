@@ -1,7 +1,7 @@
 import random
 # import telebot
 users = []
-
+# IliasID = ,5864868002
 
 def getUsersId():
     with open('users.txt', 'r') as file:
@@ -16,10 +16,7 @@ def addUser(userId):
 
 
 def deleteUser(userId):
-    # with open('users.txt', 'r') as file:
-        # readedUsers = file.read().split(',')
-        # if str(userId) in readedUsers:
-        #     readedUsers.remove(userId)
+
     readedUsers = getUsersId()
     readedUsers.remove(str(userId))
     with open('users.txt', 'w') as file:
@@ -29,6 +26,10 @@ def deleteUser(userId):
 
 def getRandomUserId(userId):
     filteredUsers = getUsersId()[:]
-    filteredUsers.remove(str(userId))
-    return int(random.choice(filteredUsers))
+    if(str(userId) in filteredUsers):
+        filteredUsers.remove(str(userId))
+    if (len(filteredUsers) == 0):
+        return "None"
+    else:
+        return random.choice(filteredUsers)
 
