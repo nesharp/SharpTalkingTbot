@@ -18,10 +18,10 @@ def addUser(userId):
 def deleteUser(userId):
 
     readedUsers = getUsersId()
-    readedUsers.remove(str(userId))
-    with open('users.txt', 'w') as file:
-        file.write(','.join(readedUsers))
-        print('file changed')
+    if (str(userId) in readedUsers):
+        readedUsers.remove(str(userId))
+        with open('users.txt', 'w') as file:
+            file.write(','.join(readedUsers))
 
 
 def getRandomUserId(userId):
